@@ -9,32 +9,46 @@ class App extends React.Component {
     super();
     this.state = {
       products: data.products,
-      cartItems: [],
+      //JSON.parse is opposite of JSON.strigify. It turns it back to JS object. Normally you will use an empty array here but since you need persistent data on refresh you have to retrieve it from localStorage as shown here.
+      //Terniary - If cartItem exist then use localStorage, ELSE use empty array.
+      cartItems: localStorage.getItem("cartItems")
+        ? JSON.parse(localStorage.getItem("cartItems"))
+        : [],
       size: "",
       sort: "",
     };
   }
 
-  removeFromCart = (product) => {
-    const cartItems = this.state.cartItems.slice()
-    this.setState({cartItems: cartItems.filter(x=> x._id !== product._id)}) 
+  createOrder = (order) => {
+    alert("Need to save order for " + order.name)
   }
 
-  addToCart =(product) => {
-    const cartItems = this.state.cartItems.slice()
+  removeFromCart = (product) => {
+    const cartItems = this.state.cartItems.slice();
+    this.setState({
+      cartItems: cartItems.filter((x) => x._id !== product._id),
+    });
+    //allows presistent on page refresh
+    localStorage.setItem("cartItems", JSON.stringify(cartItems.filter((x) => x._id !== product._id)));
+  };
+
+  addToCart = (product) => {
+    const cartItems = this.state.cartItems.slice();
     let alreadyInCart = false;
 
-    cartItems.forEach(item => {
-      if(item._id === product._id){
-        item.count++
+    cartItems.forEach((item) => {
+      if (item._id === product._id) {
+        item.count++;
         alreadyInCart = true;
       }
-     })
-     if(!alreadyInCart){
-       cartItems.push({...product, count: 1})
-     }
-     this.setState({cartItems})
-  }
+    });
+    if (!alreadyInCart) {
+      cartItems.push({ ...product, count: 1 });
+    }
+    this.setState({ cartItems });
+    // To keep data persistent on refresh of the page use "localStorage" setItem(key, value) ---- cartItem is a JS function so it needs to be converted to string with JSON.stringify as shown below. You will also do this to removeItem
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  };
 
   sortProducts = (event) => {
     const sort = event.target.value;
@@ -91,10 +105,17 @@ class App extends React.Component {
                 filterProducts={this.filterProducts}
                 sortProducts={this.sortProducts}
               ></Filter>
-              <Products products={this.state.products} addToCart={this.addToCart} />
+              <Products
+                products={this.state.products}
+                addToCart={this.addToCart}
+              />
             </div>
             <div className="sidebar">
-              <Cart cartItems={this.state.cartItems} removeFromCart={this.removeFromCart}/>
+              <Cart
+                cartItems={this.state.cartItems}
+                removeFromCart={this.removeFromCart}
+                createOrder={this.createOrder}
+              />
             </div>
           </div>
         </main>
