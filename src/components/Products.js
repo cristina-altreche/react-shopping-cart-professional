@@ -3,6 +3,8 @@ import formatCurrency from "../util";
 import Fade from "react-reveal/Fade";
 import Modal from "react-modal";
 import Zoom from "react-reveal/Zoom";
+import { connect } from "react-redux";
+import { fetchProducts } from "../actions/productActions";
 
 // TO CREATE MODAL STEPS
 // 1.import modal
@@ -13,13 +15,19 @@ import Zoom from "react-reveal/Zoom";
 //6. use conditional logic at the bottom to create modal.
 //7. import effect "zoom"
 
-export default class Products extends Component {
+//Converting to connect to Redux store
+// export default class Products extends Component {
+class Products extends Component {
   constructor(props) {
     super(props);
     this.state = {
       //this is for the MODAL state. Notice onClick on image and the two event handlers below.
       product: null,
     };
+  }
+
+  componentDidMount() {
+    this.props.fetchProducts();
   }
 
   //MODAL EVENT HANDLERS
@@ -38,32 +46,37 @@ export default class Products extends Component {
     return (
       <div>
         <Fade bottom cascade>
-          <ul className="products">
-            {this.props.products.map((product) => (
-              // Use li because it will create links for images and title
-              <li key={product._id}>
-                <div className="product">
-                  {/* For the MODAL onClick was added here to image tag */}
-                  <a
-                    href={"#" + product._id}
-                    onClick={() => this.openModal(product)}
-                  >
-                    <img src={product.image} alt={product.title}></img>
-                    <p>{product.title}</p>
-                  </a>
-                  <div className="product-price">
-                    <div>{formatCurrency(product.price)}</div>
-                    <button
-                      onClick={() => this.props.addToCart(product)}
-                      className="button primary"
+          {/* Upon loading products, product is null so a conditional rendering is required here. If it doesn't exist show loading. But if it includes a produce then continue to map over items */}
+          { !this.props.products ? (
+            <div>Loading...</div>
+          ) : (
+            <ul className="products">
+              {this.props.products.map((product) => (
+                // Use li because it will create links for images and title
+                <li key={product._id}>
+                  <div className="product">
+                    {/* For the MODAL onClick was added here to image tag */}
+                    <a
+                      href={"#" + product._id}
+                      onClick={() => this.openModal(product)}
                     >
-                      Add To Cart
-                    </button>
+                      <img src={product.image} alt={product.title}></img>
+                      <p>{product.title}</p>
+                    </a>
+                    <div className="product-price">
+                      <div>{formatCurrency(product.price)}</div>
+                      <button
+                        onClick={() => this.props.addToCart(product)}
+                        className="button primary"
+                      >
+                        Add To Cart
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          )}
         </Fade>
         {/* Create Modal HERE using conditional rendering */}
         {/* if modal exists then you can show the modal component */}
@@ -90,13 +103,16 @@ export default class Products extends Component {
                     ))}
                   </p>
                   <div className="product-price">
-                    <div>
-                      {formatCurrency(product.price)}
-                    </div>
-                    <button className="button primary" onClick={() => {
-                      this.props.addToCart(product)
-                      this.closeModal()
-                    }}>Add To Cart</button>
+                    <div>{formatCurrency(product.price)}</div>
+                    <button
+                      className="button primary"
+                      onClick={() => {
+                        this.props.addToCart(product);
+                        this.closeModal();
+                      }}
+                    >
+                      Add To Cart
+                    </button>
                   </div>
                 </div>
               </div>
@@ -107,3 +123,9 @@ export default class Products extends Component {
     );
   }
 }
+
+//To connect to the Redux store
+//state.products.items is being referenced from the productsReducer. This allows access from the list of products that comes from the server.
+export default connect((state) => ({ products: state.products.items }), {
+  fetchProducts,
+})(Products);
