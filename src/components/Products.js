@@ -126,6 +126,6 @@ class Products extends Component {
 
 //To connect to the Redux store
 //state.products.items is being referenced from the productsReducer. This allows access from the list of products that comes from the server.
-export default connect((state) => ({ products: state.products.items }), {
+export default connect((state) => ({ products: state.products.filteredItems }), {
   fetchProducts,
 })(Products);
