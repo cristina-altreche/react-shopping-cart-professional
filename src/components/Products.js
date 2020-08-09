@@ -5,6 +5,7 @@ import Modal from "react-modal";
 import Zoom from "react-reveal/Zoom";
 import { connect } from "react-redux";
 import { fetchProducts } from "../actions/productActions";
+import { addToCart} from "../actions/cartActions"
 
 // TO CREATE MODAL STEPS
 // 1.import modal
@@ -127,5 +128,5 @@ class Products extends Component {
 //To connect to the Redux store
 //state.products.items is being referenced from the productsReducer. This allows access from the list of products that comes from the server.
 export default connect((state) => ({ products: state.products.filteredItems }), {
-  fetchProducts,
+  fetchProducts, addToCart
 })(Products);

@@ -2,12 +2,16 @@ import { createStore, applyMiddleware, compose, combineReducers } from "redux";
 //thunk is used to handle async request actions
 import thunk from "redux-thunk";
 import { productsReducer } from "./reducers/productReducers";
+import { cartReducer } from "./reducers/cartReducer";
 
 const initialState = {};
 //this line of code we are able to send all information about redux store to Chrome redux dev tools and monitor what happens.
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
-  combineReducers({ products: productsReducer }),
+  combineReducers({
+    products: productsReducer,
+    cart: cartReducer,
+  }),
   initialState,
   composeEnhancer(applyMiddleware(thunk))
 );
