@@ -1,8 +1,8 @@
-const {
+import {
   FETCH_PRODUCTS,
   FILTER_PRODUCTS_BY_SIZE,
   ORDER_PRODUCTS_BY_PRICE,
-} = require("../types");
+} from "../types";
 
 //when we get new data inside actions we update state inside store here.
 export const productsReducer = (state = {}, action) => {
