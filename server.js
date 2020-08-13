@@ -6,7 +6,7 @@ const shortid = require("shortid");
 
 //to run express as a server
 const app = express();
-app.use(bodyParser.json());//when a new request comes into this server and it will read the body as json and run as json
+app.use(bodyParser.json()); //when a new request comes into this server and it will read the body as json and run as json
 
 mongoose.connect("mongodb://localhost/react-shopping-cart-professional-db", {
   useNewUrlParser: true,
@@ -44,6 +44,48 @@ app.post("/api/products", async (req, res) => {
 app.delete("/api/products/:id", async (req, res) => {
   const deletedProduct = await Product.findByIdAndDelete(req.params.id);
   res.send(deletedProduct);
+});
+
+const Order = mongoose.model(
+  "order",
+  new mongoose.Schema(
+    {
+      _id: {
+        type: String,
+        default: shortid.generate,
+      },
+      email: String,
+      name: String,
+      address: String,
+      total: Number,
+      cartItems: [
+        {
+          _id: String,
+          title: String,
+          price: Number,
+          count: Number,
+        },
+      ],
+    },
+    {
+      timestamps: true, //created at and updated at
+    }
+  )
+);
+
+//ORDER CREATION API
+app.post("/api/orders", async (req, res) => {
+  if (
+    !req.body.name ||
+    !req.body.email ||
+    !req.body.address ||
+    !req.body.total ||
+    !req.body.cartItems
+  ) {
+    return res.send({ message: "Data is required" });
+  }
+  const order = await Order(req.body).save();
+  res.send(order);
 });
 
 const port = process.env.PORT || 5000;
