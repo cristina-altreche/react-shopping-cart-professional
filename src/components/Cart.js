@@ -34,6 +34,11 @@ class Cart extends Component {
     //this.props stores data to createOrder in App.js
     this.props.createOrder(order);
   };
+
+  closeModal = () => {
+    this.props.clearOrder();
+  };
+  
   render() {
     const { cartItems, order } = this.props;
     return (
