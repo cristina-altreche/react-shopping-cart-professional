@@ -3,6 +3,7 @@ import { createStore, applyMiddleware, compose, combineReducers } from "redux";
 import thunk from "redux-thunk";
 import { productsReducer } from "./reducers/productReducers";
 import { cartReducer } from "./reducers/cartReducer";
+import { orderReducer } from "./reducers/orderReducers";
 
 const initialState = {};
 //this line of code we are able to send all information about redux store to Chrome redux dev tools and monitor what happens.
@@ -11,6 +12,7 @@ const store = createStore(
   combineReducers({
     products: productsReducer,
     cart: cartReducer,
+    order: orderReducer,
   }),
   initialState,
   composeEnhancer(applyMiddleware(thunk))
